@@ -25,8 +25,9 @@ Rules:
 Output only one label and nothing else."""
 
 root_agent = Agent(
-    model=os.getenv("ADK_MODEL", "huggingface/openbmb/MiniCPM-2B-sft-bf16"),
+    model=os.getenv("ADK_MODEL", "huggingface/openbmb/MiniCPM-2B-sft-bf16-llama-format"),
     name="orchestrator_agent",
     description="An agent that routes user queries to appropriate sub-agents based on context.",
     instruction=ORCHESTRATOR_INSTRUCTIONS,
 )
+

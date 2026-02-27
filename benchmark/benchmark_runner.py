@@ -11,11 +11,24 @@ from orchestrator_agent.classifier import classify_intent, require_hf_token
 with open("benchmark/test_cases.json", "r") as f:
     test_cases = json.load(f)
 
-require_hf_token()
+model_message = require_hf_token()
+print(f"Model access check: {model_message}")
 
 def classify(user_input):
     result = classify_intent(user_input)
     return result
+
+
+def api_status(output) -> str:
+    if not output.api_call_attempted:
+        return "SKIPPED"
+    return "SUCCESS" if output.api_call_success else "FAILED"
+
+
+def api_message(output) -> str:
+    if output.api_call_attempted and output.api_call_success:
+        return "API_CALL_SUCCESS"
+    return output.api_error or "NO_API_ERROR"
 
 # Warm-up (cold start)
 print("Warming up model...")
@@ -29,6 +42,8 @@ api_error_count = 0
 fallback_count = 0
 total_retries = 0
 model_call_disabled_count = 0
+api_call_attempt_count = 0
+api_call_success_count = 0
 
 for i, case in enumerate(test_cases, 1):
     inp = case["input"]
@@ -41,11 +56,15 @@ for i, case in enumerate(test_cases, 1):
         is_correct = (predicted == expected)
         if is_correct:
             correct += 1
-        if output.api_error:
+        if output.api_error and output.api_error != "API_CALL_SUCCESS":
             if output.api_error == "MODEL_CALL_DISABLED":
                 model_call_disabled_count += 1
             else:
                 api_error_count += 1
+        if output.api_call_attempted:
+            api_call_attempt_count += 1
+        if output.api_call_success:
+            api_call_success_count += 1
         if output.used_fallback:
             fallback_count += 1
         total_retries += output.retries
@@ -57,12 +76,16 @@ for i, case in enumerate(test_cases, 1):
             "source": output.source,
             "retries": output.retries,
             "used_fallback": output.used_fallback,
+            "api_call_attempted": output.api_call_attempted,
+            "api_call_success": output.api_call_success,
+            "api_status": api_status(output),
+            "api_message": api_message(output),
             "api_error": output.api_error,
             "correct": is_correct
         })
         print(
             f"{i:2d}: {inp[:40]:40} -> {predicted:30} "
-            f"({(lat*1000):.1f} ms, src={output.source}, retries={output.retries})"
+            f"({(lat*1000):.1f} ms, src={output.source}, api={api_status(output)}, msg={api_message(output)}, retries={output.retries})"
         )
     except Exception as e:
         print(f"Error on '{inp}': {e}")
@@ -75,6 +98,8 @@ for i, case in enumerate(test_cases, 1):
             "source": "exception",
             "retries": None,
             "used_fallback": False,
+            "api_call_attempted": False,
+            "api_call_success": False,
             "api_error": str(e),
             "correct": False
         })
@@ -101,6 +126,8 @@ summary = {
     "p95_latency_ms": round(p95, 2),
     "throughput_rps": round(throughput, 2),
     "api_error_count": api_error_count,
+    "api_call_attempt_count": api_call_attempt_count,
+    "api_call_success_count": api_call_success_count,
     "model_call_disabled_count": model_call_disabled_count,
     "fallback_count": fallback_count,
     "total_retries": total_retries,
