@@ -98,7 +98,6 @@ REQUEST_TIMEOUT_S=30
 HF_LOCAL_CHAT_COMPLETIONS_URL=http://127.0.0.1:1234/v1/chat/completions
 # HF_LOCAL_API_KEY=optional_if_your_local_server_requires_auth
 ```
-<<<<<<< HEAD
 
 Note:
 - Never commit real tokens.
