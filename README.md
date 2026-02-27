@@ -75,21 +75,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Configure environment
-
-Copy env template:
-
-#### Windows PowerShell
-
-```powershell
-Copy-Item .env.example .env
-```
-
-#### macOS/Linux
-
-```bash
-cp .env.example .env
-```
+### Configure environm
 
 Edit `.env`:
 
@@ -100,11 +86,6 @@ ADK_MODEL=huggingface/openbmb/MiniCPM-2B-sft-bf16
 MAX_RETRIES=0
 REQUEST_TIMEOUT_S=8
 ```
-
-Important:
-- Use your own HF token.
-- Do not commit `.env`.
-
 ## 5. Run
 
 ### Scripted demo
