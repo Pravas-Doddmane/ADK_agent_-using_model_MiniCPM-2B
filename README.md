@@ -77,9 +77,15 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+<<<<<<< HEAD
 ### 4. Configure `.env`
 
 If `.env` already exists, update values. If not, create it at repo root.
+=======
+### Configure environm
+
+Edit `.env`:
+>>>>>>> fccc73a6a08c62df4702786a525fdd9e12a4918e
 
 ```env
 HF_TOKEN=hf_xxx
@@ -92,6 +98,7 @@ REQUEST_TIMEOUT_S=30
 HF_LOCAL_CHAT_COMPLETIONS_URL=http://127.0.0.1:1234/v1/chat/completions
 # HF_LOCAL_API_KEY=optional_if_your_local_server_requires_auth
 ```
+<<<<<<< HEAD
 
 Note:
 - Never commit real tokens.
@@ -136,6 +143,9 @@ HF_LOCAL_API_KEY=your_key
 ```
 
 ## Run the Project
+=======
+## 5. Run
+>>>>>>> fccc73a6a08c62df4702786a525fdd9e12a4918e
 
 ### Scripted demo
 
